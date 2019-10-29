@@ -15,18 +15,19 @@ protocol PlayerDelegate {
 class Player: NSObject {
     var delegate: PlayerDelegate?
     var audioPlayer: AVAudioPlayer?
+    var url: URL
     var isPlaying: Bool {
         return audioPlayer?.isPlaying ?? false
     }
     
     //init
     
-    override init() {
-        let songURL = Bundle.main.url(forResource: "piano", withExtension: "mp3")!
+     init(url: URL = Bundle.main.url(forResource: "piano", withExtension: "mp3")!) {
+        self.url = url
         do {
-            audioPlayer = try AVAudioPlayer(contentsOf: songURL)
+            audioPlayer = try AVAudioPlayer(contentsOf: self.url)
         } catch {
-            NSLog("Error opening piano.mp3: \(error)")
+            NSLog("Error opening \(url)): \(error)")
         }
         super.init()
         audioPlayer?.delegate = self

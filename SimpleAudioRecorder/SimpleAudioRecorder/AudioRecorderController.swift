@@ -34,6 +34,7 @@ class AudioRecorderController: UIViewController {
         print ("At init(coder")
         super.init(coder: aDecoder)
         player.delegate = self
+        recorder.delegate = self
         
     }
     
@@ -57,8 +58,11 @@ class AudioRecorderController: UIViewController {
     }
     
     private func updateViews() {
-        let title = player.isPlaying ? "Pause" : "Play"
-        playButton.setTitle(title, for: .normal)
+        let playTitle = player.isPlaying ? "Pause" : "Play"
+        playButton.setTitle(playTitle, for: .normal)
+        
+        let recordTitle = recorder.isRecording ? "Stop Recording" : "Record"
+        recordButton.setTitle(recordTitle, for: .normal)
     }
 }
 
@@ -66,6 +70,21 @@ extension AudioRecorderController: PlayerDelegate {
     func playDidChangeState(player: Player) {
         //update the UI
         updateViews()
+    }
+}
+extension AudioRecorderController: RecorderDelegate {
+    func recorderDidChangeState(recorder: Recorder) {
+        updateViews()
+    }
+    
+    func recorderDidSaveFile(recorder: Recorder) {
+        updateViews()
+        //TODO: - Play the file
+        if let url = recorder.fileURL, recorder.isRecording == false {
+            //Play the recording
+            player = Player(url: url)
+            player.delegate = self
+        }
     }
     
     
