@@ -31,6 +31,7 @@ class AudioRecorderController: UIViewController {
         player = Player()
         print ("At init(coder")
         super.init(coder: aDecoder)
+        player.delegate = self
     }
     
 	override func viewDidLoad() {
@@ -45,11 +46,24 @@ class AudioRecorderController: UIViewController {
 
 
     @IBAction func playButtonPressed(_ sender: Any) {
-
+        player.playPause()
 	}
     
     @IBAction func recordButtonPressed(_ sender: Any) {
     
     }
+    
+    private func updateViews() {
+        let title = player.isPlaying ? "Pause" : "Play"
+        playButton.setTitle(title, for: .normal)
+    }
 }
 
+extension AudioRecorderController: PlayerDelegate {
+    func playDidChangeState(player: Player) {
+        //update the UI
+        updateViews()
+    }
+    
+    
+}
