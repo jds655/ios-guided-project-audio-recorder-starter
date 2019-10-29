@@ -16,8 +16,18 @@ class Player: NSObject {
     var delegate: PlayerDelegate?
     var audioPlayer: AVAudioPlayer?
     var url: URL
+    var timer: Timer?
     var isPlaying: Bool {
         return audioPlayer?.isPlaying ?? false
+    }
+    var timeElspsed: TimeInterval {
+        return audioPlayer?.currentTime ?? 0.0
+    }
+    var duration: TimeInterval {
+        return audioPlayer?.duration ?? 0.0
+    }
+    var timeRemaining: TimeInterval {
+        return duration - timeElspsed
     }
     
     //init
@@ -38,12 +48,14 @@ class Player: NSObject {
     func play() {
         audioPlayer?.play()
         delegate?.playDidChangeState(player: self)
+        startTimer()
     }
     
     //pause
     func pause () {
         audioPlayer?.pause()
         delegate?.playDidChangeState(player: self)
+        cancelTimer()
     }
     
     //playPause
@@ -55,6 +67,21 @@ class Player: NSObject {
         }
     }
     
+    func startTimer() {
+        cancelTimer()
+        timer = Timer.scheduledTimer(timeInterval: 0.03, target: self, selector: #selector(updateTimer(timer:)), userInfo: nil, repeats: true)
+    }
+    
+    func cancelTimer() {
+        timer?.invalidate()
+        timer = nil
+    }
+    
+    @objc private func updateTimer(timer: Timer) {
+        delegate?.playDidChangeState(player: self)
+    }
+    
+    
     //seekToPosition: Double
     
 }
@@ -62,9 +89,11 @@ class Player: NSObject {
 extension Player: AVAudioPlayerDelegate {
     func audioPlayerDecodeErrorDidOccur(_ player: AVAudioPlayer, error: Error?) {
         NSLog("AVAudio Error: \(String(describing: error))")
+        cancelTimer()
     }
     
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         delegate?.playDidChangeState(player: self)
+        cancelTimer()
     }
 }
