@@ -16,6 +16,7 @@ class AudioRecorderController: UIViewController {
     @IBOutlet weak var timeRemainingLabel: UILabel!
     @IBOutlet weak var timeSlider: UISlider!
 	
+    private var player: Player
 	private lazy var timeFormatter: DateComponentsFormatter = {
 		let formatting = DateComponentsFormatter()
 		formatting.unitsStyle = .positional // 00:00  mm:ss
@@ -26,6 +27,12 @@ class AudioRecorderController: UIViewController {
 		return formatting
 	}()
 	
+    required init?(coder aDecoder: NSCoder) {
+        player = Player()
+        print ("At init(coder")
+        super.init(coder: aDecoder)
+    }
+    
 	override func viewDidLoad() {
 		super.viewDidLoad()
 
